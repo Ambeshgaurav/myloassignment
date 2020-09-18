@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const controller= require('../Controller/controller')
+const userController= require('../Controller/controller')
 const authentication= require('../Middleware/Auth')
 
 
@@ -7,11 +7,12 @@ const authentication= require('../Middleware/Auth')
 
 
 
-router.post('/Login',controller.Login);
-router.post('/Register',controller.Register);
-router.post('/update',authentication.authenticateToken,controller.Update);
-router.post('/read',authentication.authenticateToken,controller.ReadData);
-router.post('/Delete',authentication.authenticateToken,controller.DeleteData);
+router.post('/login',userController.Login);
+router.post('/register',userController.Register);
+router.post('/forgotPassword',authentication.authenticateToken,userController.forgotPassword);
+router.post('/checkCode',authentication.authenticateToken,userController.checkCode);
+router.post('/resetPassword',authentication.authenticateToken,userController.resetPassword);
+
 
 
 

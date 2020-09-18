@@ -1,98 +1,71 @@
-const connectMysql = require('../config/ConfigMysql');
+const connect = require('../config/connectionMongodb')
 
-function signupDataMysql(data) {
 
+
+
+function SaveUserDetails(data) {
     return new Promise((resolve, reject) => {
-        connectMysql.service.connection.query("select email from Home where email=?", [data.email], function (err, rows) {
+        connect.dbo.collection('Customer1').find({
+            email: data.email
+        }).toArray((err, res) => {
             if (err) {
                 reject(err)
             }
-            else if (rows && rows.length) {
-                resolve(0)
-            }
-            else {
-                var sql = ("insert into Home (name,email,password,phone_number,role) values(?,?,?,?,?)");
-                connectMysql.service.connection.query(sql, [ data.name, data.email, data.password, data.phone,data.role], function (err, rows) {
+            else if (res.length == 0) {
+                connect.dbo.collection('Customer1').insertOne(data, (err, res) => {
                     if (err) {
+                        console.log(err)
                         reject(err)
                     }
                     else {
-                        resolve(rows)
+                        // console.log("this ------->", res);
+                        resolve(res.insertedCount);
                     }
-
-                });
+                })
             }
-
-
+            else {
+                resolve(0)
+            }
         });
-
     });
-
 }
-
-function loginDataMysql(data) {
+function updateDetails(data) {
     return new Promise((resolve, reject) => {
-        connectMysql.service.connection.query("select email ,password from Home where email=?", [data.email], function (err, rows) {
+        connect.dbo.collection('customer1').updateOne({
+            email: data.email
+        }, { $push: { data: insert_data } }, (err, res) => {
             if (err) {
                 reject(err)
             }
             else {
-                resolve(rows)
+                resolve(res.modifiedCount);
             }
         });
     });
+
 }
-
-
-
-function ReadDataMysql(data) {
+function findData(data) {
+    console.log("_____________________________________--",data);
     return new Promise((resolve, reject) => {
-        connectMysql.service.connection.query("select * from Home where email=?", [data], function (err, rows) {
+        connect.dbo.collection('Customer1').find({ email: data.email }).toArray((err, res) => {
             if (err) {
                 reject(err)
             }
             else {
-                resolve(rows)
+                console.log("===================================",res);
+                resolve(res);
             }
         });
-    });
-}
-function updateDataMysql(data) {
-    return new Promise((resolve, reject) => {
-        var sql = ("update Home set name=?, password=?,phone_number=? where email=?")
-        connectMysql.service.connection.query(sql, [data.name, data.password, data.phone_number,data.email], function (err, rows) {
-            if (err) {
-                reject(err)
-            }
-            else {
-                resolve(rows)
-            }
-        });
-    });
-}
-function deleteUserMysql(data) {
-    return new Promise((resolve, reject) => {
-        var sql = ("update Home set isdefault=?where email=?")
-        connectMysql.service.connection.query(sql, ['0',data], function (err, rows) {
-            if (err) {
-                reject(err)
-            }
-            else {
-                resolve(rows)
-            }
-        });
-    });
+    })
 }
 
 
 
 
-module.exports =
-{
-    loginDataMysql: loginDataMysql,
-    signupDataMysql: signupDataMysql,
-    ReadDataMysql:ReadDataMysql,
-    updateDataMysql:updateDataMysql,
-    deleteUserMysql:deleteUserMysql
+
+module.exports = {
+    SaveUserDetails: SaveUserDetails,
+    updateDetails:updateDetails,
+    findData: findData
 
 }

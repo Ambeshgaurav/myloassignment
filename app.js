@@ -14,9 +14,8 @@ app.use(bodyParser.urlencoded({
 if (process.env.NODE_ENV === 'development') {
   // app.use(logger('dev'));
 } 
-app.use("/Home",routes);
-app.use("/Community",routes);
-app.use("/Shop",routes);
+app.use("/user",routes);
+
 
 const PORT = process.env.PORT || 1507;
 const server = http.createServer(app);
